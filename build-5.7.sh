@@ -9,10 +9,15 @@ if [ "$asan" == 1 ]; then
 fi
 
 cmd="cmake -B ${build_dir} -GNinja -DCMAKE_BUILD_TYPE=$build_type \
-      -DDOWNLOAD_BOOST=1 -DWITH_BOOST=~/boost \
+     -DDOWNLOAD_BOOST=1 -DWITH_BOOST=~/boost \
+     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DFORCE_COLORED_OUTPUT=ON \
      $asan_opt"
 
 echo $cmd
 
-${cmd} && time ninja -C "$build_dir"
+cat > .clangd <<EOF
+CompileFlags:
+  CompilationDatabase: ${build_dir}
+EOF
 
+${cmd} && time ninja -C "$build_dir"
