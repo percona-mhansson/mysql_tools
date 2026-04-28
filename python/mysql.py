@@ -47,6 +47,9 @@ class Build:
         self._build_type = build_type
 
         logging.debug("workdir %s", self.workdir)
+        logging.debug("build_dir %s", build_dir)
+        logging.debug("build_type %s", build_type)
+        logging.debug("build_home %s", build_home)
 
         if build_dir:
             self.build_dir = os.path.abspath(build_dir)

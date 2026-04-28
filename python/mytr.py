@@ -2,6 +2,7 @@
 
 from shutil import which
 import argparse
+import logging
 import os
 import subprocess
 import sys
@@ -46,12 +47,20 @@ def main():
         "build type (see --build-type)",
     )
 
+    parser.add_argument(
+        "-C",
+        "--workdir",
+        default=os.getcwd(),
+        help="change to DIR before doing anything else",
+    )
+
     args, mtr_args = parser.parse_known_args()
 
-    if args.verbose >= 2:
-        print(f"mtr args: {" ".join(mtr_args)}")
+    mysql.setup_logging(args.verbose)
 
-    build = mysql.Build("args.workdir", args.build_dir, mysql.Defaults.BUILD_TYPE)
+    logging.debug(f"mtr args: {" ".join(mtr_args)}")
+
+    build = mysql.Build(args.workdir, args.build_dir, mysql.Defaults.BUILD_TYPE, args.build_home)
 
     cwd = os.path.abspath(f"{build.build_dir}/mysql-test")
 
@@ -59,11 +68,11 @@ def main():
     mtr_args = [exe] + mtr_args
 
     if args.dry_run:
-        print(f"Would run {MTR} like this: {" ".join(mtr_args)}")
+        logging.info(f"Would have run {MTR} like this: {" ".join(mtr_args)}")
         sys.exit(0)
 
-    if args.verbose:
-        print(f"Running {MTR} like this: {" ".join(mtr_args)}")
+    logging.debug(f"Running {MTR} like this: {" ".join(mtr_args)}")
+
     if which("colordiff"):
         with subprocess.Popen(
             mtr_args, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
