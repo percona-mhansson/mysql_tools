@@ -28,7 +28,7 @@ def setup_logging(verbosity):
 class Defaults:
     """Should probably be loaded from a file"""
 
-    BUILD_HOME = "build"
+    BUILD_HOME = "build.dir"
     BUILD_TYPE = "debug"
     DATABASE = "mysql"
     DATADIR = "mydata"
