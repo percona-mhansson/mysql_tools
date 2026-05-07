@@ -14,7 +14,6 @@ echo "build dir ${build_dir}"
 
 if [ "$clang" == "1" ]; then
    clang_opt="-DCMAKE_C_COMPILER=clang-18 -DCMAKE_CXX_COMPILER=clang++-18"
-   build_dir="$build_dir.clang"
 fi
 
 if [ "$asan" == 1 ]; then
