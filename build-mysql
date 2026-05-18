@@ -2,13 +2,39 @@
 
 asan=0
 clang=1
-build_home="build.dir"
+
+if [ -f VERSION ]
+then
+  version_file=VERSION
+fi
+
+if [ -f MYSQL_VERSION ]
+then
+  if [ "$version_file" != "" ]
+  then
+    echo "Error! Both VERSION and MYSQL_VERSION exist!"
+    exit 1
+  fi
+  version_file=MYSQL_VERSION
+fi
+
+major_version=$(sed -n 's,MYSQL_VERSION_MAJOR=,,p' $version_file)
+minor_version=$(sed -n 's,MYSQL_VERSION_MINOR=,,p' $version_file)
+
+echo "Building version ${major_version}.${minor_version}"
+
+if [ "$major_version.$minor_version" == "8.4" ] || \
+   [ "$major_verion" -ge "9" ]
+then
+  build_home="build"
+else
+  build_home="build.dir"
+fi
 
 version=$1
 build_type=${2:-Debug}
 build_dir=${3:-${build_home}/${build_type,,}}
 
-echo "Building version ${version}"
 echo "build type ${build_type}"
 echo "build dir ${build_dir}"
 
@@ -17,7 +43,8 @@ if [ "$clang" == "1" ]; then
 fi
 
 if [ "$asan" == 1 ]; then
-   asan_opt="-DWITH_ASAN=ON"
+  asan_opt="-DWITH_ASAN=ON"
+  build_dir=${build_dir}.asan
 fi
 
 cmd="cmake -B ${build_dir} -GNinja -DCMAKE_BUILD_TYPE=$build_type \
@@ -38,4 +65,4 @@ CompileFlags:
   CompilationDatabase: ${build_dir}
 EOF
 
-${cmd} && time ninja -C "$build_dir"
+${cmd} && time ninja -C "$build_dir" -j10
