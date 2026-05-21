@@ -38,6 +38,14 @@ def main():
         help="don't actually start mysqld, only print how it would have started and then exit",
     )
 
+    parser.add_argument(
+        "--no-color",
+        action="store_false",
+        dest="color",
+        default=True,
+        help="disable colordiff output colorization",
+    )
+
     build_specific_args = parser.add_mutually_exclusive_group()
 
     build_specific_args.add_argument(
@@ -60,7 +68,9 @@ def main():
 
     logging.debug(f"mtr args: {" ".join(mtr_args)}")
 
-    build = mysql.Build(args.workdir, args.build_dir, mysql.Defaults.BUILD_TYPE, args.build_home)
+    build = mysql.Build(
+        args.workdir, args.build_dir, mysql.Defaults.BUILD_TYPE, args.build_home
+    )
 
     cwd = os.path.abspath(f"{build.build_dir}/mysql-test")
 
@@ -73,7 +83,7 @@ def main():
 
     logging.debug(f"Running {MTR} like this: {" ".join(mtr_args)}")
 
-    if which("colordiff"):
+    if args.color and not "--manual-gdb" in mtr_args and which("colordiff"):
         with subprocess.Popen(
             mtr_args, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
         ) as mtr_proc:
