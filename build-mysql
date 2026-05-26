@@ -47,11 +47,15 @@ if [ "$asan" == 1 ]; then
   build_dir=${build_dir}.asan
 fi
 
+if [[ "$(uname -m)" != "aarch64" ]]; then
+   mold_opt="-DWITH_LD=mold"
+fi
+
 cmd="cmake -B ${build_dir} -GNinja -DCMAKE_BUILD_TYPE=$build_type \
      -DDOWNLOAD_BOOST=1 -DWITH_BOOST=~/boost \
      -DWITH_AUTHENTICATION_LDAP=OFF -DWITH_PERCONA_AUTHENTICATION_LDAP=OFF \
      -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DFORCE_COLORED_OUTPUT=ON \
-     -DWITH_LD=mold \
+     $mold_opt \
      -DWITH_ROCKSDB=OFF \
      -DWITH_COREDUMPER=OFF \
      -DWITHOUT_COMPONENT_KEYRING_KMIP=ON \
