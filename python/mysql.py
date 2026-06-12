@@ -21,6 +21,10 @@ def setup_logging(verbosity):
         level = logging.INFO
     else:
         level = logging.WARNING
+
+    if verbosity > 1:
+        print(f"Verbosity {verbosity}.")
+
     logging.basicConfig(level=level, format="%(message)s")
 
 
