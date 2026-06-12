@@ -7,6 +7,8 @@ container_name=${2:-mydev}
 username=${3:-$(whoami)}
 
 home="/home/$username"
+script_dir=$(dirname $0)
+
 
 echo "Setting up container '$container_name' from image '$image_name' for user '$username'"
 
@@ -40,7 +42,7 @@ docker run -d --name "$container_name" \
 
 docker exec -uroot "$container_name" chmod 777 /ssh-agent
 
-copy_files_to_home .bash_aliases .gdbinit
+copy_files_to_home "$script_dir/.bash_aliases" "$script_dir/.gdbinit"
 
 # Personally, I keep this file in Git and just symlink it
 copy_file_to_home "$HOME/.gitconfig"
