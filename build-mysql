@@ -31,9 +31,8 @@ else
   build_home="build.dir"
 fi
 
-version=$1
-build_type=${2:-Debug}
-build_dir=${3:-${build_home}/${build_type,,}}
+build_type=${1:-Debug}
+build_dir=${2:-${build_home}/${build_type,,}}
 
 echo "build type ${build_type}"
 echo "build dir ${build_dir}"
