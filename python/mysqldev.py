@@ -39,6 +39,13 @@ def make_parser():
     build_specific_args = mixin_parser.add_mutually_exclusive_group()
 
     build_specific_args.add_argument(
+        "-H",
+        "--build-home",
+        default=mysql.Defaults.BUILD_HOME,
+        help="home directory for mysql builds (default: %(default)s)",
+    )
+
+    build_specific_args.add_argument(
         "-B",
         "--build-dir",
         help="lets you specify the build directory directly, instead of inferring it from the "
@@ -165,7 +172,7 @@ def main():
         setattr(args, "verbose", 1)
 
     mysql.setup_logging(args.verbose)
-    build = mysql.Build(args.workdir, args.build_dir, args.build_type)
+    build = mysql.Build(args.workdir, args.build_dir, args.build_type, args.build_home)
     args.func(args, mysqld_args, build)
 
 
