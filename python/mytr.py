@@ -66,7 +66,7 @@ def main():
 
     mysql.setup_logging(args.verbose)
 
-    logging.debug(f"mtr args: {" ".join(mtr_args)}")
+    logging.debug("mtr args: %s", (" ".join(mtr_args)))
 
     build = mysql.Build(
         args.workdir, args.build_dir, mysql.Defaults.BUILD_TYPE, args.build_home
@@ -78,24 +78,24 @@ def main():
     mtr_args = [exe] + mtr_args
 
     if args.dry_run:
-        logging.info(f"Would have run {MTR} like this: {" ".join(mtr_args)}")
+        logging.info("Would have run %s like this: %s", MTR, " ".join(mtr_args))
         sys.exit(0)
 
-    logging.debug(f"Running {MTR} like this: {" ".join(mtr_args)}")
+    logging.debug("Running %s like this: %s", MTR, " ".join(mtr_args))
 
     if args.color and not "--manual-gdb" in mtr_args and which("colordiff"):
         with subprocess.Popen(
             mtr_args, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
-        ) as mtr_proc:
-            with subprocess.Popen(["colordiff"], stdin=mtr_proc.stdout) as cd:
+        ) as mtr:
+            with subprocess.Popen(["colordiff"], stdin=mtr.stdout) as cd:
                 # Allow p to receive a SIGPIPE if colordiff exits.
-                mtr_proc.stdout.close()
+                mtr.stdout.close()
                 cd.wait()
-                rc = cd.returncode
+        rc = mtr.returncode
     else:
-        with subprocess.Popen(mtr_args, cwd=cwd) as mtr_proc:
-            mtr_proc.wait()
-            rc = mtr_proc.returncode
+        with subprocess.Popen(mtr_args, cwd=cwd) as mtr:
+            mtr.wait()
+            rc = mtr.returncode
 
     sys.exit(rc)
 
