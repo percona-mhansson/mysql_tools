@@ -23,13 +23,7 @@ minor_version=$(sed -n 's,MYSQL_VERSION_MINOR=,,p' $version_file)
 
 echo "Building version ${major_version}.${minor_version}"
 
-if [ "$major_version.$minor_version" == "8.4" ] || \
-   [ "$major_verion" -ge "9" ]
-then
-  build_home="build"
-else
-  build_home="build.dir"
-fi
+build_home="build"
 
 build_type=${1:-Debug}
 build_dir=${2:-${build_home}/${build_type,,}}
