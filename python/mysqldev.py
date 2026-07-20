@@ -5,8 +5,15 @@ import logging
 import os
 import pathlib
 import sys
+import subprocess
+
+
+from shutil import which
+
 
 import mysql
+
+MTR = "mysql-test-run.pl"
 
 
 class _Verbosity(argparse.Action):
@@ -115,7 +122,12 @@ def make_parser():
     server_parser = subparsers.add_parser(
         "server", description="Starts mysqld in the background.", parents=[mixin_parser]
     )
-    server_parser.set_defaults(func=handle_server)
+    server_parser.set_defaults(func=handle_server_subcommand)
+
+    mtr_parser = subparsers.add_parser(
+        "mtr", description="Runs MTR.", parents=[mixin_parser]
+    )
+    mtr_parser.set_defaults(func=handle_mtr_subcommand)
 
     mysqld_args = server_parser.add_argument_group(
         "mysqld options", "Passed verbatim to mysqld."
@@ -155,6 +167,14 @@ def make_parser():
         help="Prints this mysqld's pid .",
     )
 
+    mtr_parser.add_argument(
+        "--no-color",
+        action="store_false",
+        dest="color",
+        default=True,
+        help="disable colordiff output colorization",
+    )
+
     return parser
 
 
@@ -188,7 +208,7 @@ def get_data_dir(args):
     return datadir
 
 
-def handle_server(args, mysqld_args, build):
+def handle_server_subcommand(args, mysqld_args, build):
 
     datadir = get_data_dir(args)
     os.makedirs(datadir, exist_ok=True)
@@ -243,6 +263,39 @@ def handle_server(args, mysqld_args, build):
         server.create_database(args, mysqld_args)
 
     server.start(args, mysqld_args)
+
+
+def handle_mtr_subcommand(args, mtr_args, build):
+    build = mysql.Build(
+        args.workdir, args.build_dir, mysql.Defaults.BUILD_TYPE, args.build_home
+    )
+
+    cwd = os.path.abspath(f"{build.build_dir}/mysql-test")
+
+    exe = f"{build.build_dir}/mysql-test/{MTR}"
+    mtr_args = [exe] + mtr_args
+
+    if args.dry_run:
+        logging.info("Would have run %s like this: %s", MTR, " ".join(mtr_args))
+        sys.exit(0)
+
+    logging.debug("Running %s like this: %s", MTR, " ".join(mtr_args))
+
+    if args.color and not "--manual-gdb" in mtr_args and which("colordiff"):
+        with subprocess.Popen(
+            mtr_args, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+        ) as mtr:
+            with subprocess.Popen(["colordiff"], stdin=mtr.stdout) as cd:
+                # Allow p to receive a SIGPIPE if colordiff exits.
+                mtr.stdout.close()
+                cd.wait()
+        rc = mtr.returncode
+    else:
+        with subprocess.Popen(mtr_args, cwd=cwd) as mtr:
+            mtr.wait()
+            rc = mtr.returncode
+
+    sys.exit(rc)
 
 
 if __name__ == "__main__":
