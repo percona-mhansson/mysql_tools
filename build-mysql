@@ -20,8 +20,9 @@ fi
 
 major_version=$(sed -n 's,MYSQL_VERSION_MAJOR=,,p' $version_file)
 minor_version=$(sed -n 's,MYSQL_VERSION_MINOR=,,p' $version_file)
+patch_version=$(sed -n 's,MYSQL_VERSION_PATCH=,,p' $version_file)
 
-echo "Building version ${major_version}.${minor_version}"
+echo "Building version ${major_version}.${minor_version}.${patch_version}"
 
 build_home="build"
 
@@ -44,14 +45,33 @@ if [[ "$(uname -m)" != "aarch64" ]]; then
    mold_opt="-DWITH_LD=mold"
 fi
 
+version_num=$((major_version * 10000 + minor_version * 100 + patch_version))
+
+if [[ $version_num -ge 80028 ]]; then
+  v80028opt="-DWITHOUT_COMPONENT_KEYRING_KMIP=ON"
+fi
+
+if [[ $version_num -ge 80029 ]]; then
+  v80029opt="-DWITH_ROCKSDB=OFF -DWITH_COREDUMPER=OFF"
+fi
+
+if [[ $version_num -ge 80030 ]]; then
+  v80030opt="-DWITH_PERCONA_AUTHENTICATION_LDAP=OFF"
+fi
+
+if [[ $version_num -ge 80033 ]]; then
+  v80033opt="-DFORCE_COLORED_OUTPUT=ON"
+fi
+
 cmd="cmake -B ${build_dir} -GNinja -DCMAKE_BUILD_TYPE=$build_type \
      -DDOWNLOAD_BOOST=1 -DWITH_BOOST=~/boost \
-     -DWITH_AUTHENTICATION_LDAP=OFF -DWITH_PERCONA_AUTHENTICATION_LDAP=OFF \
-     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DFORCE_COLORED_OUTPUT=ON \
+     -DWITH_AUTHENTICATION_LDAP=OFF \
+     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
      $mold_opt \
-     -DWITH_ROCKSDB=OFF \
-     -DWITH_COREDUMPER=OFF \
-     -DWITHOUT_COMPONENT_KEYRING_KMIP=ON \
+     $v80028opt \
+     $v80029opt \
+     $v80030opt \
+     $v80033opt \
      $clang_opt \
      $asan_opt"
 
