@@ -129,6 +129,16 @@ def make_parser():
     )
     mtr_parser.set_defaults(func=handle_mtr_subcommand)
 
+    client_parser = subparsers.add_parser(
+        "client", description="Starts the client.", parents=[mixin_parser]
+    )
+
+    client_parser.set_defaults(func=handle_client_subcommand)
+
+    client_parser.add_argument("-u", "--user", default=mysql.Defaults.USER)
+    client_parser.add_argument("-D", "--database", default=mysql.Defaults.DATABASE)
+    client_parser.add_argument("--socket", type=str)
+
     mysqld_args = server_parser.add_argument_group(
         "mysqld options", "Passed verbatim to mysqld."
     )
@@ -263,6 +273,21 @@ def handle_server_subcommand(args, mysqld_args, build):
         server.create_database(args, mysqld_args)
 
     server.start(args, mysqld_args)
+
+
+def handle_client_subcommand(args, client_args, build):
+    build = mysql.Build(args.workdir, args.build_dir, args.build_type)
+
+    mysql_args = [f"--user={args.user}", f"--database={args.database}"] + client_args
+
+    client = mysql.Client(build)
+
+    if args.socket:
+        mysql_args += [f"--socket={args.socket}"]
+    else:
+        mysql_args += [f"--socket={client.make_socket_path()}"]
+
+    client.start(args, mysql_args)
 
 
 def handle_mtr_subcommand(args, mtr_args, build):
