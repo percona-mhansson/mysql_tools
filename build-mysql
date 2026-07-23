@@ -18,6 +18,11 @@ then
   version_file=MYSQL_VERSION
 fi
 
+if [ "$version_file" == "" ]; then
+  echo "No version file found!"
+  exit 1
+fi
+
 major_version=$(sed -n 's,MYSQL_VERSION_MAJOR=,,p' $version_file)
 minor_version=$(sed -n 's,MYSQL_VERSION_MINOR=,,p' $version_file)
 patch_version=$(sed -n 's,MYSQL_VERSION_PATCH=,,p' $version_file)
