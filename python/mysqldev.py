@@ -276,8 +276,6 @@ def handle_server_subcommand(args, mysqld_args, build):
 
 
 def handle_client_subcommand(args, client_args, build):
-    build = mysql.Build(args.workdir, args.build_dir, args.build_type)
-
     mysql_args = [f"--user={args.user}", f"--database={args.database}"] + client_args
 
     client = mysql.Client(build)
