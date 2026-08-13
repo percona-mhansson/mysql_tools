@@ -20,11 +20,11 @@ RUN yes | unminimize
 
 RUN apt update && apt -y install build-essential cmake zlib1g-dev ninja-build \
   libssl-dev libreadline-dev libcurl4-openssl-dev libkrb5-dev libldap-dev \
-  libsasl2-dev pkg-config libtirpc-dev bison sudo exuberant-ctags python3 \
+  libsasl2-dev pkg-config libtirpc-dev bison flex sudo exuberant-ctags python3 \
   black git pylint lsof net-tools vim file man locate lsb-release tree gdb \
   nano cmake-curses-gui curl inetutils-ping clang-format-15 clang-tidy \
   clangd libantlr4-runtime-dev libudev-dev unzip colordiff locales iproute2 \
-  libexpat1-dev ccache valgrind python3.12-venv mold \
+  libexpat1-dev ccache valgrind python3.12-venv mold jq \
   && sed -i 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \
   && locale-gen en_US.UTF-8 \
   && update-locale LANG=en_US.UTF-8 \
