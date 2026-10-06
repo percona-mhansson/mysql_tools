@@ -2,6 +2,28 @@
 
 set -euo pipefail
 
+usage() {
+  cat <<EOF
+Usage: $(basename "$0") [IMAGE_NAME [CONTAINER_NAME [USERNAME]]]
+
+Start a detached development container from IMAGE_NAME, mount ~/gitroot,
+~/boost and the host SSH agent into it, and copy .bash_aliases, .gdbinit and
+~/.gitconfig into the user's home directory. Requires a running SSH agent.
+
+Arguments:
+  IMAGE_NAME      Image to run (default: dev)
+  CONTAINER_NAME  Name of the new container (default: mydev)
+  USERNAME        User inside the container (default: $(whoami))
+
+Options:
+  -h, --help      Show this help and exit
+EOF
+}
+
+case "${1:-}" in
+  -h|--help) usage; exit 0 ;;
+esac
+
 image_name=${1:-dev}
 container_name=${2:-mydev}
 username=${3:-$(whoami)}
