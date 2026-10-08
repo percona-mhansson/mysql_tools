@@ -308,7 +308,13 @@ def handle_mtr_subcommand(args, mtr_args, build):
         with subprocess.Popen(
             mtr_args, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
         ) as mtr:
-            with subprocess.Popen(["colordiff"], stdin=mtr.stdout) as cd:
+            # --difftype is essential: without it colordiff reads the whole
+            # stream trying to auto-detect a diff header (which mtr's progress
+            # output never has) and only emits at EOF, so output appears to
+            # arrive all at once. Forcing the type makes it stream each line.
+            with subprocess.Popen(
+                ["colordiff", "--difftype=diffu"], stdin=mtr.stdout
+            ) as cd:
                 # Allow p to receive a SIGPIPE if colordiff exits.
                 mtr.stdout.close()
                 cd.wait()
