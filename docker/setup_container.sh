@@ -60,6 +60,6 @@ copy_files_to_home "$script_dir/.bash_aliases" "$script_dir/.gdbinit"
 
 # Personally, I keep this file in Git and just symlink it
 copy_file_to_home "$HOME/.gitconfig"
-copy_file_to_home "$HOME/.gitconfig-percona"
+copy_file_to_home "$script_dir/.gitconfig-percona"
 docker exec -u"$username" "$container_name" bash -c "echo '[filter \"codeformat\"]
 	clean = clang-format-15 --assume-filename=%f --style=file' >> $home/.gitconfig"
