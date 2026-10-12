@@ -54,6 +54,7 @@ docker run -d --name "$container_name" \
        -v "$HOME/gitroot:$home/gitroot" \
        -v "$HOME/boost:$home/boost" \
        -v "$ssh_agent_socket:/ssh-agent" \
-       --cap-add=SYS_PTRACE "$image_name" tail -f /dev/null
+       --cap-add=SYS_PTRACE --cap-add=SYS_ADMIN --security-opt apparmor=unconfined \
+       "$image_name" tail -f /dev/null
 
 docker exec -uroot "$container_name" chmod 777 /ssh-agent
