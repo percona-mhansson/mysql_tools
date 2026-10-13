@@ -65,7 +65,7 @@ if [ "$(uname)" = Linux ]; then
   echo "Limiting container to $cpus CPUs and $memory of memory"
 fi
 
-docker run -d --name "$container_name" \
+docker run -d --name "$container_name" --hostname "$container_name" \
        -v "$HOME/gitroot:$home/gitroot" \
        -v "$HOME/boost:$home/boost" \
        -v "$ssh_agent_socket:/ssh-agent" \
