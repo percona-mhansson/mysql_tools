@@ -50,10 +50,27 @@ else
   ssh_agent_socket=$SSH_AUTH_SOCK
 fi
 
+# Leave one CPU and a quarter of the memory to the host.
+cpu_limit_opt=
+memory_limit_opt=
+if [ "$(uname)" = Linux ]; then
+  cpus=$(nproc)
+  if [ "$cpus" -gt 1 ]; then cpus=$((cpus - 1)); else cpus=0.5; fi
+  while read -r key mem_kb _; do
+    [ "$key" = MemTotal: ] && break
+  done </proc/meminfo
+  memory="$((mem_kb * 3 / 4 / 1024))m"
+  cpu_limit_opt="--cpus=$cpus"
+  memory_limit_opt="--memory=$memory"
+  echo "Limiting container to $cpus CPUs and $memory of memory"
+fi
+
 docker run -d --name "$container_name" \
        -v "$HOME/gitroot:$home/gitroot" \
        -v "$HOME/boost:$home/boost" \
        -v "$ssh_agent_socket:/ssh-agent" \
+       "$cpu_limit_opt" "$memory_limit_opt" \
+       --shm-size=8g \
        --cap-add=SYS_PTRACE --cap-add=SYS_ADMIN --security-opt apparmor=unconfined \
        "$image_name" tail -f /dev/null
 
