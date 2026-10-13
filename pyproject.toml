@@ -1,0 +1,2 @@
+[tool.pyright]
+  exclude = [".venv", "python/venv", "python/__pycache__"]
