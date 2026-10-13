@@ -100,6 +100,7 @@ cmd="cmake -B ${build_dir} -GNinja -DCMAKE_BUILD_TYPE=$build_type \
      $v80030opt \
      $v80033opt \
      $compiler_opt \
+    -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
      $asan_opt"
 
 echo $cmd

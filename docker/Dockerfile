@@ -39,3 +39,6 @@ RUN PERL_MM_USE_DEFAULT=1 cpan install JSON.pm XML::Parser
 
 USER "$username"
 WORKDIR "/home/$username"
+
+RUN mkdir -p "/home/$username/.config/ccache"
+COPY --chown="$username:$username" ccache.conf "/home/$username/.config/ccache/ccache.conf"
