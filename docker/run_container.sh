@@ -69,7 +69,7 @@ docker run -d --name "$container_name" --hostname "$container_name" \
        -v "$HOME/gitroot:$home/gitroot" \
        -v "$HOME/boost:$home/boost" \
        -v "$ssh_agent_socket:/ssh-agent" \
-       "$cpu_limit_opt" "$memory_limit_opt" \
+       $cpu_limit_opt $memory_limit_opt \
        --shm-size=8g \
        --cap-add=SYS_PTRACE --cap-add=SYS_ADMIN --security-opt apparmor=unconfined \
        "$image_name" tail -f /dev/null
