@@ -70,7 +70,7 @@ if [[ $version_num -ge 80033 ]]; then
 fi
 
 if [ "$clang" == "1" ]; then
-   compiler_opt="-DCMAKE_C_COMPILER=clang-18 -DCMAKE_CXX_COMPILER=clang++-18"
+   compiler_opt="-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++"
 fi
 
 cmd="cmake -B ${build_dir} -GNinja -DCMAKE_BUILD_TYPE=$build_type \
