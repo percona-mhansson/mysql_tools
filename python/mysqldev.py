@@ -312,6 +312,12 @@ def handle_mtr_subcommand(args, mtr_args, build):
         logging.info("Would have run %s like this: %s", MTR, " ".join(mtr_args))
         sys.exit(0)
 
+    if not os.path.isfile(exe):
+        logging.critical(
+            "Can't find %s. Is %s a build directory?", exe, build.build_dir
+        )
+        sys.exit(1)
+
     logging.debug("Running %s like this: %s", MTR, " ".join(mtr_args))
 
     if args.color and not "--manual-gdb" in mtr_args and which("colordiff"):
