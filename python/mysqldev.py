@@ -185,6 +185,14 @@ def make_parser():
         help="disable colordiff output colorization",
     )
 
+    mtr_parser.add_argument(
+        "--no-mem",
+        action="store_false",
+        dest="mem",
+        default=True,
+        help="don't pass --mem to mtr (it is passed by default)",
+    )
+
     return parser
 
 
@@ -296,6 +304,8 @@ def handle_mtr_subcommand(args, mtr_args, build):
     cwd = os.path.abspath(f"{build.build_dir}/mysql-test")
 
     exe = f"{build.build_dir}/mysql-test/{MTR}"
+    if args.mem and not any(a.startswith("--mem") for a in mtr_args):
+        mtr_args.append("--mem")
     mtr_args = [exe] + mtr_args
 
     if args.dry_run:
