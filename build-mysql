@@ -48,9 +48,10 @@ fi
 
 version_num=$((major_version * 10000 + minor_version * 100 + patch_version))
 
-if [[ $version_num -ge 50700 ]]; then
-  echo "Avoiding clang on 5.7"
+if [[ $version_num -le 50799 ]]; then
+  echo "Avoiding clang on 5.7 (got version $version_num)"
   clang=0
+  v57opt="-DENABLE_DOWNLOADS=ON"
 fi
 
 if [[ $version_num -ge 80028 ]]; then
@@ -95,6 +96,7 @@ cmd="cmake -B ${build_dir} -GNinja -DCMAKE_BUILD_TYPE=$build_type \
      -DWITH_ROUTER=OFF \
      -DWITH_TEMPTABLE_STORAGE_ENGINE=OFF \
      $mold_opt \
+     $v57opt \
      $v80028opt \
      $v80029opt \
      $v80030opt \
