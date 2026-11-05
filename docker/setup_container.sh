@@ -61,5 +61,10 @@ copy_files_to_home "$script_dir/.bash_aliases" "$script_dir/.gdbinit"
 # Personally, I keep this file in Git and just symlink it
 copy_file_to_home "$HOME/.gitconfig"
 copy_file_to_home "$script_dir/.gitconfig-percona"
-docker exec -u"$username" "$container_name" bash -c "echo '[filter \"codeformat\"]
-	clean = clang-format-15 --assume-filename=%f --style=file' >> $home/.gitconfig"
+docker exec -u"$username" "$container_name" git config --global filter.codeformat.clean \
+       "clang-format-15 --assume-filename=%f --style=file"
+
+# The bind-mounted file system reports unreliable stat data, making git
+# think files are modified (e.g. "Your local changes would be overwritten").
+docker exec -u"$username" "$container_name" git config --global core.trustctime false
+docker exec -u"$username" "$container_name" git config --global core.checkStat minimal
