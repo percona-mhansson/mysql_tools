@@ -3,6 +3,12 @@
 asan=0
 clang=1
 
+build_home="build"
+
+build_type=${1:-Debug}
+build_dir=${2:-${build_home}/${build_type,,}}
+
+
 if [ -f VERSION ]
 then
   version_file=VERSION
@@ -28,11 +34,6 @@ minor_version=$(sed -n 's,MYSQL_VERSION_MINOR=,,p' $version_file)
 patch_version=$(sed -n 's,MYSQL_VERSION_PATCH=,,p' $version_file)
 
 echo "Building version ${major_version}.${minor_version}.${patch_version}"
-
-build_home="build"
-
-build_type=${1:-Debug}
-build_dir=${2:-${build_home}/${build_type,,}}
 
 echo "build type ${build_type}"
 echo "build dir ${build_dir}"
