@@ -17,7 +17,7 @@ RUN echo \
 # libantlr4-runtime-dev and libudev-dev are needed for mysqlshell
 
 RUN apt update && apt -y install build-essential cmake zlib1g-dev ninja-build \
-  libssl-dev libreadline-dev libcurl4-openssl-dev libkrb5-dev libldap-dev \
+  libssl-dev libssh-dev libreadline-dev libcurl4-openssl-dev libkrb5-dev libldap-dev \
   libsasl2-dev pkg-config libtirpc-dev bison flex sudo exuberant-ctags python3 \
   python3-pip python3.14-venv \
   black git pylint lsof net-tools vim file man locate lsb-release tree gdb \
